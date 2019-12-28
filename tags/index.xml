@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on 9r0k Site</title>
+    <link>http://9r0k.org/tags/</link>
+    <description>Recent content in Tags on 9r0k Site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 28 Dec 2019 16:06:27 +0800</lastBuildDate>
+    
+	<atom:link href="http://9r0k.org/tags/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>k8s</title>
+      <link>http://9r0k.org/tags/k8s/</link>
+      <pubDate>Sat, 28 Dec 2019 16:06:27 +0800</pubDate>
+      
+      <guid>http://9r0k.org/tags/k8s/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>kubernetes</title>
+      <link>http://9r0k.org/tags/kubernetes/</link>
+      <pubDate>Sat, 28 Dec 2019 16:06:27 +0800</pubDate>
+      
+      <guid>http://9r0k.org/tags/kubernetes/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>languages</title>
+      <link>http://9r0k.org/tags/languages/</link>
+      <pubDate>Sat, 28 Dec 2019 16:04:23 +0800</pubDate>
+      
+      <guid>http://9r0k.org/tags/languages/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>learn</title>
+      <link>http://9r0k.org/tags/learn/</link>
+      <pubDate>Sat, 28 Dec 2019 16:04:23 +0800</pubDate>
+      
+      <guid>http://9r0k.org/tags/learn/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>linux</title>
+      <link>http://9r0k.org/tags/linux/</link>
+      <pubDate>Sat, 28 Dec 2019 16:03:20 +0800</pubDate>
+      
+      <guid>http://9r0k.org/tags/linux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ssh</title>
+      <link>http://9r0k.org/tags/ssh/</link>
+      <pubDate>Sat, 28 Dec 2019 16:03:20 +0800</pubDate>
+      
+      <guid>http://9r0k.org/tags/ssh/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>emacs</title>
+      <link>http://9r0k.org/tags/emacs/</link>
+      <pubDate>Sat, 28 Dec 2019 16:02:27 +0800</pubDate>
+      
+      <guid>http://9r0k.org/tags/emacs/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>use-package</title>
+      <link>http://9r0k.org/tags/use-package/</link>
+      <pubDate>Sat, 28 Dec 2019 16:02:27 +0800</pubDate>
+      
+      <guid>http://9r0k.org/tags/use-package/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

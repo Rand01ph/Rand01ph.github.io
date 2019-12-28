@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html><meta charset="utf-8"><meta name="generator" content="Hugo 0.60.1" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light only"><title>SSH登陆主机不尝试密码&nbsp;&ndash;&nbsp;9r0k Site</title><link rel="stylesheet" href="/css/core.min.51a3025999844727ed93a564c6ad1f52feacd7a37d6e517a9343ae018831afa9bca8d064689d586938cf8ca3a1446d1b.css" integrity="sha384-UaMCWZmERyftk6Vkxq0fUv6s16N9blF6k0OuAYgxr6m8qNBkaJ1YaTjPjKOhRG0b"><body>
+<div class="base-body max-width"><section id="header" class="header max-body-width"><p><a class="home" href="/"><span class="site-name">9r0k Site</span></a></p></section><div id="content" class="flex-body max-body-width"><section class="article-header">
+<h1>SSH登陆主机不尝试密码</h1>
+<p class="article-date">2019-12-28</p>
+</section>
+<article class="markdown-body"><h2 id="问题">问题</h2>
+<p>今天尝试通过SSH登陆堡垒机发现，堡垒机是使用密码进行登陆的，但是SSH过程会尝试本地私钥然后失败，后主动在~/.ssh/config的对应主机配置下添加
+<code>PubkeyAuthentication no</code> 后成功通过密码登陆。</p>
+<h2 id="原因">原因</h2>
+<p>.ssh/config 中配置了多个 <code>IdentityFile</code> ，即使 <code>IdentityFile</code> 是配置在 <code>Host</code> 段下，它也会全局应用。这意味着ssh在向服务器请求密码提示之前，会尝试每个主机上的每个公钥。这时候就会导致多次尝试登陆失败，被服务器关闭连接。</p>
+<h2 id="解决方案">解决方案</h2>
+<p>1.config中只保留一个 <code>IdentityFile</code> 配置</p>
+<p>2.config中配置 <code>PubkeyAuthentication no</code></p>
+<p>3.ssh命令行参数增加 <code>-o PubkeyAuthentication=no</code></p>
+</article><section class="article-labels"><a class="article-category li" href=/categories/linux/><span class="hashtag">#</span>linux</a><a class="article-tag li" href=/tags/linux/><span class="hashtag">#</span>linux</a><a class="article-tag li" href=/tags/ssh/><span class="hashtag">#</span>ssh</a></section><section class="article-navigation"><p><a class="link" href="/blog/git%E5%8D%8F%E8%AE%AE/"><span class="li"></span>Git协议介绍</a></p><p><a class="link" href="/blog/use-package/"><span class="li"></span>use-package教程</a class="link"></p></section></div><section id="footer" class="footer max-body-width"><p>9r0k Site</p>
+<p><span>Powered by </span><a href="https://gohugo.io">Hugo</a><span> and the </span><a href="https://themes.gohugo.io/hugo-notepadium/">Notepadium</a></p>
+</section></div>
+</body>
+</html>

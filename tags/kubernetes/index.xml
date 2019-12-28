@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>kubernetes on 9r0k Site</title>
+    <link>http://9r0k.org/tags/kubernetes/</link>
+    <description>Recent content in kubernetes on 9r0k Site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 28 Dec 2019 16:06:27 +0800</lastBuildDate>
+    
+	<atom:link href="http://9r0k.org/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>K8S外部流量引入集群的几种方式总结</title>
+      <link>http://9r0k.org/blog/k8s%E5%A4%96%E9%83%A8%E6%B5%81%E9%87%8F%E5%BC%95%E5%85%A5/</link>
+      <pubDate>Sat, 28 Dec 2019 16:06:27 +0800</pubDate>
+      
+      <guid>http://9r0k.org/blog/k8s%E5%A4%96%E9%83%A8%E6%B5%81%E9%87%8F%E5%BC%95%E5%85%A5/</guid>
+      <description>通过Pod hostPort 相当于docker run -p 8081:8080,不用创建服务,因此端口只在容器运行的vm上监听直接将容器的端口与所调度的节点上的端口路</description>
+    </item>
+    
+  </channel>
+</rss>

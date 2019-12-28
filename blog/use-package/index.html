@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html><meta charset="utf-8"><meta name="generator" content="Hugo 0.60.1" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light only"><title>use-package教程&nbsp;&ndash;&nbsp;9r0k Site</title><link rel="stylesheet" href="/css/core.min.51a3025999844727ed93a564c6ad1f52feacd7a37d6e517a9343ae018831afa9bca8d064689d586938cf8ca3a1446d1b.css" integrity="sha384-UaMCWZmERyftk6Vkxq0fUv6s16N9blF6k0OuAYgxr6m8qNBkaJ1YaTjPjKOhRG0b"><body>
+<div class="base-body max-width"><section id="header" class="header max-body-width"><p><a class="home" href="/"><span class="site-name">9r0k Site</span></a></p></section><div id="content" class="flex-body max-body-width"><section class="article-header">
+<h1>use-package教程</h1>
+<p class="article-date">2019-12-28</p>
+</section>
+<article class="markdown-body"><h2 id="配置参数">配置参数</h2>
+<h3 id="init-加载前准备">:init 加载前准备</h3>
+<p>定义代码在包加载前执行,可用来设置影响 package 加载过程的变量。 即使配置的 package 不存在， <code>:init</code> 部分的代码也会执行，所以该部分代码应该保证 package 不存在也可以执行成功。</p>
+<h3 id="config-加载后配置">:config 加载后配置</h3>
+<p>定义代码在包加载之后执行,主要用在对package进行配置。在延迟加载的情况下，执行会被放在延迟加载之后</p>
+<h3 id="commands-自动加载命令">:commands 自动加载命令</h3>
+<p><code>command</code> 关键字会为命令创建自动加载（autoload），他的参数是 symbol 或 symbol 列表</p>
+<h3 id="bind">:bind</h3>
+<p><code>bind</code> 关键字用来设置键绑定,接受一个cons或者cons列表</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-emacs-lisp" data-lang="emacs-lisp">(use-package ace-jump-mode
+:bind (<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">C-.</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">.</span> ace-jump-mode))
+</code></pre></div><p>这会做两件事情，首先为 <code>ace-jump-mode</code> 命令创建自动加载，然后直到真正使用的时候延时加载。再将键 <code>C-.</code> 绑定至该命令,然后你就可以用 <code>M-x describe-personal-keybindings</code> 去查看键绑定了</p>
+<h3 id="bind-keymap">:bind-keymap</h3>
+<p>通常 <code>bind</code> 期望commands是从给定包中自动加载的函数。但是，如果这些命令实际上是键映射，则这不起作用，因为键映射不是功能，不能使用Emacs的自动加载机制自动加载。针对这种场景， <code>bind-keymap</code> 的commands对应的是包中定义的keymap</p>
+<h3 id="map-局部键绑定">:map 局部键绑定</h3>
+<p>局部 keymap 的键绑定只有在 package 加载后才生效。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-emacs-lisp" data-lang="emacs-lisp">(use-package helm
+:bind (:map helm-command-map
+	(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">C-c h</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">.</span> helm-execute-persistent-action)))
+</code></pre></div><p>上述配置等同于 <code>helm</code> 加载之后，将 <code>C-c h</code> 按键绑定到 <code>helm-execute-persistent-action</code></p>
+<h3 id="disable">:disable</h3>
+<p><code>:disable</code> 关键字可以关闭遇到困难的模块，或者停止加载目前未使用的某个模块</p>
+<h3 id="load-path-扩展加载路径">:load-path 扩展加载路径</h3>
+<p>如果 pacakge 的加载需要将一个目录添加到 <code>load-path</code> 中，使用 <code>:load-path</code> 。参数可以是一个符号、函数、字符串或字符串列表。如果是相对路径，基于 <code>user-emacs-directory</code> 进行扩展。</p>
+<h3 id="ensure-自动安装">:ensure 自动安装</h3>
+<p>可以使用 use-package 配合 package.el 从 ELPA 加载 pacakge。这对于在多个机器之间共享.emacs 很有用；在.emacs 中声明的 package 都会自动下载。 :ensure 关键字会自动安装系统没有的 package。如果希望所有包 package 都这样处理，需要设置</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-emacs-lisp" data-lang="emacs-lisp">(setq use-package-always-ensure <span style="color:#66d9ef">t</span>)
+</code></pre></div><h4 id="主动更新">主动更新</h4>
+<p><code>:ensure</code> 会安装系统上没有的 package，但不会进行主动更新。如果希望主动更新，可以使用 <code>auto-package-update</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-emacs-lisp" data-lang="emacs-lisp">(use-package auto-package-update
+  :config
+  (setq auto-package-update-delete-old-versions <span style="color:#66d9ef">t</span>)
+  (setq auto-package-update-hide-results <span style="color:#66d9ef">t</span>)
+  (auto-package-update-maybe))
+</code></pre></div><h3 id="mode-interpreter-模式和解释器">:mode :interpreter 模式和解释器</h3>
+<p>类似 <code>:bind</code> ,可以使用 <code>:mode</code> 和 <code>:interpreter</code> 在变量 <code>auto-mode-alist</code> 和 <code>interpreter-mode-alist</code> 中建立延迟绑定。这些关键字的参数可以是 cons、 列表、字符串或正则表达式。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-emacs-lisp" data-lang="emacs-lisp">(use-package ruby-mode
+:mode <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">\\</span><span style="color:#e6db74">.rb</span><span style="color:#e6db74">\\</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#34;</span>
+:interpreter <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">ruby</span><span style="color:#e6db74">&#34;</span>)
+
+<span style="color:#75715e">;; The package is &#34;python&#34; but the mode is &#34;python-mode&#34;:</span>
+(use-package python
+:mode (<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">\\</span><span style="color:#e6db74">.py</span><span style="color:#e6db74">\\</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">.</span> python-mode)
+:interpreter (<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">python</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">.</span> python-mode))
+</code></pre></div><h3 id="hook-钩子">:hook 钩子</h3>
+<p><code>:hook</code> 关键字允许在钩子上添加函数，这里只需要钩子的基本名称。</p>
+<h3 id="defer-延迟加载">:defer 延迟加载</h3>
+<p>如果没有使用 <code>:commands</code>, <code>:bind</code>, <code>:bind*</code>, <code>:bind-keymap</code>, <code>:bind-keymap*</code>, <code>:mode</code>, <code>:interpreter</code>, or <code>:hoo</code> 可以使用 <code>:defer</code> 关键字实现延时加载</p>
+<h3 id="after">:after</h3>
+<p>有时，只有在另一个 package 加载之后，加载当前 package 才有意义，因为有些变量或函数此前不在作用域内。这可以通过 <code>:after</code> 关键字来实现，该关键字允许设置相当丰富的加载条件。</p>
+<h3 id="require">:require</h3>
+<p><code>:after</code> 可以让 package 在依赖加载后才加载，但如果依赖不可用时， <code>:require</code> 关键字更简单些，它不会加载该 package。</p>
+<h3 id="custom-自定义变量">:custom 自定义变量</h3>
+<p><code>:custom</code> 关键字允许设置 package 的自定义变量。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-emacs-lisp" data-lang="emacs-lisp">(use-package comint
+ :custom
+ (comint-buffer-maximum-size <span style="color:#ae81ff">20000</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Increase comint buffer size.</span><span style="color:#e6db74">&#34;</span>)
+ (comint-prompt-read-only <span style="color:#66d9ef">t</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Make the prompt read only.</span><span style="color:#e6db74">&#34;</span>))
+</code></pre></div></article><section class="article-labels"><a class="article-category li" href=/categories/emacs/><span class="hashtag">#</span>emacs</a><a class="article-tag li" href=/tags/emacs/><span class="hashtag">#</span>emacs</a><a class="article-tag li" href=/tags/use-package/><span class="hashtag">#</span>use-package</a></section><section class="article-navigation"><p><a class="link" href="/blog/ssh%E7%99%BB%E9%99%86%E4%B8%BB%E6%9C%BA%E4%B8%8D%E5%B0%9D%E8%AF%95%E5%AF%86%E7%A0%81/"><span class="li"></span>SSH登陆主机不尝试密码</a></p><p><a class="link" href="/blog/%E9%87%8D%E6%96%B0%E5%AD%A6%E4%B9%A0%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/"><span class="li"></span>重新学习编程语言</a class="link"></p></section></div><section id="footer" class="footer max-body-width"><p>9r0k Site</p>
+<p><span>Powered by </span><a href="https://gohugo.io">Hugo</a><span> and the </span><a href="https://themes.gohugo.io/hugo-notepadium/">Notepadium</a></p>
+</section></div>
+</body>
+</html>

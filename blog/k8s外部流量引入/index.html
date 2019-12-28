@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html><meta charset="utf-8"><meta name="generator" content="Hugo 0.60.1" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light only"><title>K8S外部流量引入集群的几种方式总结&nbsp;&ndash;&nbsp;9r0k Site</title><link rel="stylesheet" href="/css/core.min.51a3025999844727ed93a564c6ad1f52feacd7a37d6e517a9343ae018831afa9bca8d064689d586938cf8ca3a1446d1b.css" integrity="sha384-UaMCWZmERyftk6Vkxq0fUv6s16N9blF6k0OuAYgxr6m8qNBkaJ1YaTjPjKOhRG0b"><body>
+<div class="base-body max-width"><section id="header" class="header max-body-width"><p><a class="home" href="/"><span class="site-name">9r0k Site</span></a></p></section><div id="content" class="flex-body max-body-width"><section class="article-header">
+<h1>K8S外部流量引入集群的几种方式总结</h1>
+<p class="article-date">2019-12-28</p>
+</section>
+<article class="markdown-body"><h2 id="通过pod">通过Pod</h2>
+<h3 id="hostport">hostPort</h3>
+<p>相当于docker run -p 8081:8080,不用创建服务,因此端口只在容器运行的vm上监听直接将容器的端口与所调度的节点上的端口路由，这样用户就可以通过宿主机的IP加上端口来访问Pod了</p>
+<h4 id="使用场景">使用场景</h4>
+<p>nginx Ingress controller</p>
+<h4 id="不足">不足</h4>
+<ul>
+<li>因为Pod重新调度的时候该Pod被调度到的宿主机可能会变动，这样就变化了，用户必须自己维护一个Pod与所在宿主机的对应关系</li>
+<li>无法多pod负载</li>
+</ul>
+<h3 id="hostnetwork">hostNetwork</h3>
+<p>相当于 docker run &ndash;net=host ,不用创建服务,因此端口只在容器运行的VM上监听.
+在这种 Pod 中运行的应用程序可以直接看到启动 Pod 主机的网络接口。</p>
+<h4 id="使用场景">使用场景</h4>
+<p>可以将网络插件包装在Pod中然后部署在每个宿主机上，这样该Pod就可以控制该宿主机上的所有网络。例如: nginx Ingress controller</p>
+<h4 id="不足">不足</h4>
+<ul>
+<li>每次启动这个Pod的时候都可能被调度到不同的节点上，所有外部访问Pod的IP也是变化的</li>
+<li>调度Pod的时候还需要考虑是否与宿主机上的端口冲突，</li>
+<li>无法多pod负载</li>
+</ul>
+<h2 id="通过服务">通过服务</h2>
+<h3 id="clusterip">ClusterIP</h3>
+<p>ClusterIP服务是默认的k8s服务。提供集群内部其他应用访问的服务，外部无法访问。但是可以使用kubernetes proxy通过外部访问ClusterIP</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">kubectl proxy --port<span style="color:#f92672">=</span><span style="color:#ae81ff">8080</span>
+</code></pre></div><p>通过 <code>http://localhost:8080/api/v1/proxy/namespaces/&lt;NAMESPACE&gt;/services/&lt;SERVICE-NAME&gt;:&lt;PORT-NAME&gt;/</code></p>
+<p>或者 <code>http://localhost:8080/api/v1/proxy/namespaces/default/services/my-internal-service:http/</code></p>
+<h4 id="使用场景">使用场景</h4>
+<ul>
+<li>调试服务</li>
+<li>允许内部流量，显示内部仪表盘等</li>
+</ul>
+<h4 id="不足">不足</h4>
+<p>由于此方法要求您用已授权用户运行 kubectl ，因此您不应该使用此方法将您的服务公开到公网上或将其用于生产。</p>
+<h3 id="nodeport">NodePort</h3>
+<p>是暴露服务最原始的方式。会在所有节点（VM）上打开一个特定的端口，并且发送到此端口的任何流量都将转发到该服务。服务级别,由kube-proxy操控,所有节点规则统一,逻辑上是全局的,kube-proxy相当于是一张全局路由表基本上，NodePort 服务与普通的 “ClusterIP” 服务 YAML 定义有两点区别。</p>
+<ol>
+<li>首先，type 是 “NodePort”。</li>
+<li>还有一个称为 nodePort 的附加端口，指定在节点上打开哪个端口。 如果你不指定这个端口，它会选择一个随机端口。</li>
+</ol>
+<p>可以通过任意一个节点IP加上nodePort指定的端口访问该服务。
+<code>&lt;NodeIP&gt;:spec.ports[*].nodePort</code></p>
+<h4 id="使用场景">使用场景</h4>
+<ul>
+<li>服务不必始终可用</li>
+<li>非常关注成本,演示程序或者临时使用</li>
+</ul>
+<h4 id="不足">不足</h4>
+<ul>
+<li>每个端口只能有一个服务</li>
+<li>默认只能使用端口30000-32767需要修改k8s集群配置开放端口限制</li>
+<li>如果节点/虚拟机IP发生变化，需要处理该问题</li>
+<li>需要在外部搭建额外的负载均衡</li>
+<li>转发次数较多</li>
+</ul>
+<h3 id="loadbalancer">LoadBalancer</h3>
+<p>LoadBalancer 是一些特定公有云提供的负载均衡器，需要特定的云服务商支持。</p>
+<h4 id="使用场景">使用场景</h4>
+<p>如果你想直接暴露一个服务，这是默认的方法(GKE上)。您指定的端口上的所有流量都将被转发到该服务， 没有过滤、路由等。这意味着您可以发送几乎任何类型的流量，如 HTTP，TCP，UDP，Websockets，gRPC 或其他。</p>
+<h4 id="不足">不足</h4>
+<p>使用 LoadBalancer 公开的每项服务都将获得自己的 IP 地址，并且您必须为每个暴露的服务使用一个 LoadBalancer，这可能会付出比较大的代价！需要部署的环境支持cloud provider</p>
+<h2 id="通过ingress">通过Ingress</h2>
+<h3 id="ingress">Ingress</h3>
+<p>Ingress实际上不是一种服务。它在服务之前，充当集群中的“智能路由器”或入口点。</p>
+<h4 id="使用场景">使用场景</h4>
+<p>如果您希望在相同的 IP 地址下暴露多个服务，并且这些服务都使用相同的L7协议（通常是HTTP），则 Ingress 是最有用的。</p>
+<p>如果您使用原生 GCP 集成，您只需支付一个负载平衡器，由于 Ingress 很“智能”，您可以获得许多开箱即用的功能（如 SSL，Auth，路由等）</p>
+<h2 id="通过集群外">通过集群外</h2>
+<h3 id="externalips">externalIPs</h3>
+<p>在Service的spec中，填入IP地址,externalIPs字段平常鲜有人提到。</p>
+<p>通过服务创建,在指定的node上监听端口,当把IP地址填入这个字段后，kube-proxy会增加对应的iptables规则， 当有以对应IP为目标的流量发送到Node节点时，iptables将进行NAT，将流量转发到对应的服务上。</p>
+<p>一般情况下， 很少会遇到服务器接受非自身绑定IP流量的情况，所以externalIPs不常被使用，但配合网络层的其他工具，它可以实现给Service绑定外部IP的效果。</p>
+<p>Kubernetes Service的externalIps(外部IP)要求是至少能路由到一个k8s节点上的。</p>
+<p>即如果有外部IP可以路由到一个或多个k8s节点上，就可以把k8s的Service暴露在这个外部IP上，通过访问外部IP+Service的端口将流量接入到集群内。</p>
+<p>这里需要明确externalIps(外部IP)不是Kubernetes管理，而是集群管理员负责的，即集群管理员要保证externalIps(外部IP)可以被至少路由到一个k8s节点上。</p>
+<h4 id="使用场景">使用场景</h4>
+<ul>
+<li>想通过服务来负载,但要求某台指定的node上监听,而非像nodeport所有节点监听.</li>
+<li>可以使用IPVS配合externalIPs将外部流量导入k8s集群</li>
+</ul>
+<h2 id="参考链接">参考链接</h2>
+<p><a href="https://jishu.io/kubernetes/ipvs-loadbalancer-for-kubernetes/">https://jishu.io/kubernetes/ipvs-loadbalancer-for-kubernetes/</a></p>
+<p><a href="https://imroc.io/posts/kubernetes/kubernetes-nodeport-vs-loadbalancer-vs-ingress-when-should-i-use-what/">https://imroc.io/posts/kubernetes/kubernetes-nodeport-vs-loadbalancer-vs-ingress-when-should-i-use-what/</a></p>
+</article><section class="article-labels"><a class="article-category li" href=/categories/k8s/><span class="hashtag">#</span>k8s</a><a class="article-tag li" href=/tags/k8s/><span class="hashtag">#</span>k8s</a><a class="article-tag li" href=/tags/kubernetes/><span class="hashtag">#</span>kubernetes</a></section><section class="article-navigation"><p><a class="link" href="/blog/git%E5%8D%8F%E8%AE%AE/"><span class="li"></span>Git协议介绍</a class="link"></p></section></div><section id="footer" class="footer max-body-width"><p>9r0k Site</p>
+<p><span>Powered by </span><a href="https://gohugo.io">Hugo</a><span> and the </span><a href="https://themes.gohugo.io/hugo-notepadium/">Notepadium</a></p>
+</section></div>
+</body>
+</html>

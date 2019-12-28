@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>linux on 9r0k Site</title>
+    <link>http://9r0k.org/categories/linux/</link>
+    <description>Recent content in linux on 9r0k Site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 28 Dec 2019 16:03:20 +0800</lastBuildDate>
+    
+	<atom:link href="http://9r0k.org/categories/linux/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>SSH登陆主机不尝试密码</title>
+      <link>http://9r0k.org/blog/ssh%E7%99%BB%E9%99%86%E4%B8%BB%E6%9C%BA%E4%B8%8D%E5%B0%9D%E8%AF%95%E5%AF%86%E7%A0%81/</link>
+      <pubDate>Sat, 28 Dec 2019 16:03:20 +0800</pubDate>
+      
+      <guid>http://9r0k.org/blog/ssh%E7%99%BB%E9%99%86%E4%B8%BB%E6%9C%BA%E4%B8%8D%E5%B0%9D%E8%AF%95%E5%AF%86%E7%A0%81/</guid>
+      <description>问题 今天尝试通过SSH登陆堡垒机发现，堡垒机是使用密码进行登陆的，但是SSH过程会尝试本地私钥然后失败，后主动在~/.ssh/config的</description>
+    </item>
+    
+  </channel>
+</rss>

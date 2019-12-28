@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>emacs on 9r0k Site</title>
+    <link>http://9r0k.org/categories/emacs/</link>
+    <description>Recent content in emacs on 9r0k Site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 28 Dec 2019 16:02:27 +0800</lastBuildDate>
+    
+	<atom:link href="http://9r0k.org/categories/emacs/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>use-package教程</title>
+      <link>http://9r0k.org/blog/use-package/</link>
+      <pubDate>Sat, 28 Dec 2019 16:02:27 +0800</pubDate>
+      
+      <guid>http://9r0k.org/blog/use-package/</guid>
+      <description>配置参数 :init 加载前准备 定义代码在包加载前执行,可用来设置影响 package 加载过程的变量。 即使配置的 package 不存在， :init 部分的代码也会执行，所以该部分代码应该保证</description>
+    </item>
+    
+  </channel>
+</rss>

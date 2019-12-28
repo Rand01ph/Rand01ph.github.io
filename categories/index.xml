@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Categories on 9r0k Site</title>
+    <link>http://9r0k.org/categories/</link>
+    <description>Recent content in Categories on 9r0k Site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 28 Dec 2019 16:06:27 +0800</lastBuildDate>
+    
+	<atom:link href="http://9r0k.org/categories/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>k8s</title>
+      <link>http://9r0k.org/categories/k8s/</link>
+      <pubDate>Sat, 28 Dec 2019 16:06:27 +0800</pubDate>
+      
+      <guid>http://9r0k.org/categories/k8s/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>CodeSkill</title>
+      <link>http://9r0k.org/categories/codeskill/</link>
+      <pubDate>Sat, 28 Dec 2019 16:04:23 +0800</pubDate>
+      
+      <guid>http://9r0k.org/categories/codeskill/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>linux</title>
+      <link>http://9r0k.org/categories/linux/</link>
+      <pubDate>Sat, 28 Dec 2019 16:03:20 +0800</pubDate>
+      
+      <guid>http://9r0k.org/categories/linux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>emacs</title>
+      <link>http://9r0k.org/categories/emacs/</link>
+      <pubDate>Sat, 28 Dec 2019 16:02:27 +0800</pubDate>
+      
+      <guid>http://9r0k.org/categories/emacs/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
