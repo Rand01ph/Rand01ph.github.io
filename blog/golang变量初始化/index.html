@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html><meta charset="utf-8"><meta name="generator" content="Hugo 0.62.0" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light only"><title>Golang变量初始化&nbsp;&ndash;&nbsp;9r0k Site</title><link rel="stylesheet" href="/css/core.min.51a3025999844727ed93a564c6ad1f52feacd7a37d6e517a9343ae018831afa9bca8d064689d586938cf8ca3a1446d1b.css" integrity="sha384-UaMCWZmERyftk6Vkxq0fUv6s16N9blF6k0OuAYgxr6m8qNBkaJ1YaTjPjKOhRG0b"><body>
+<div class="base-body max-width"><section id="header" class="header max-body-width"><p><a class="home" href="/"><span class="site-name">9r0k Site</span></a></p></section><div id="content" class="flex-body max-body-width"><section class="article-header">
+<h1>Golang变量初始化</h1>
+<p class="article-date">2020-01-10</p>
+</section>
+<article class="markdown-body"><h2 id="var">var</h2>
+<p>var 变量名字 类型 = 表达式如果初始化表达式被省略，那么将用零值初始化该变量。数值类型变量对应的零值是0，布尔类型变量对应的零值是false，字符串类型对应的零值是空字符串，接口或引用类型（包括slice、指针、map、chan和函数）变量对应的零值是nil。数组或结构体等聚合类型对应的零值是每个元素或字段都是对应该类型的零值。</p>
+<p>var t []string 比 t := []string{} 更好</p>
+<p>初始化类型,而且对于引用类型的变量，我们不光要声明它，还要为它分配内存空间.new和make都可以用来分配空间,</p>
+<h2 id="make">make</h2>
+<p>make主要用来初始化内置数据结构.包括slice,map和channel,返回该类型已初始化(非零值)的值.
+需要注意的是这三种类型本身就是引用类型.</p>
+<ol>
+<li>slice 是一个包含 data(指向数组的指针)、cap 和 len 的结构体；</li>
+<li>map 是一个指向 hmap 结构体的指针；</li>
+<li>channel 是一个指向 hchan 结构体的指针；</li>
+</ol>
+<p>使用make的好处是可以指定len和cap，make(type,len,cap),合适的len和cap可以提升性能。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">slice</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">int</span>, <span style="color:#ae81ff">100</span>)
+<span style="color:#a6e22e">hash</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#a6e22e">sting</span>]<span style="color:#66d9ef">string</span>, <span style="color:#ae81ff">100</span>)
+<span style="color:#a6e22e">channel</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span>, <span style="color:#ae81ff">100</span>)
+</code></pre></div><p>注意,</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">s1</span> []<span style="color:#66d9ef">int</span>
+<span style="color:#a6e22e">s2</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">int</span>, <span style="color:#ae81ff">3</span>)
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">m1</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>
+<span style="color:#a6e22e">m2</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>, <span style="color:#ae81ff">3</span>)
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">c1</span> <span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span>
+<span style="color:#a6e22e">c2</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span>, <span style="color:#ae81ff">3</span>)
+</code></pre></div><p>slice s1 的零值是 `[]int(nil)` 等于nil, 而通过make初始化之后的s2是 `[]int{0, 0, 0}`,不要把内部`int`型的零值当成了slice的零值.
+同样的map的零值是 `map[string]string(nil) 等于nil`, 通过make初始化之后是 `map[string]string{}`
+chain的零值是 `(chain int)(nil)` 等于nil, 通过make初始化之后是 `(chan int)(0xc0000a0080)`</p>
+<h2 id="new">new</h2>
+<p>使用new来获取指向某个类型的指针,指针指向新分配的,该类型的零值.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> new(<span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>)
+<span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>{}
+</code></pre></div><p>这两者等价.</p>
+<h2 id="参考链接">参考链接</h2>
+<p><a href="https://draveness.me/golang/docs/part2-foundation/ch05-keyword/golang-make-and-new/">https://draveness.me/golang/docs/part2-foundation/ch05-keyword/golang-make-and-new/</a></p>
+</article><section class="article-labels"><a class="article-category li" href=/categories/go/><span class="hashtag">#</span>Go</a><a class="article-tag li" href=/tags/go/><span class="hashtag">#</span>Go</a></section><section class="article-navigation"><p><a class="link" href="/blog/k8s%E5%A4%96%E9%83%A8%E6%B5%81%E9%87%8F%E5%BC%95%E5%85%A5/"><span class="li"></span>K8S外部流量引入集群的几种方式总结</a class="link"></p></section></div><section id="footer" class="footer max-body-width"><p>9r0k Site</p>
+<p><span>Powered by </span><a href="https://gohugo.io">Hugo</a><span> and the </span><a href="https://themes.gohugo.io/hugo-notepadium/">Notepadium</a></p>
+</section></div>
+</body>
+</html>
