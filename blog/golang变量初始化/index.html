@@ -7,30 +7,30 @@
 <p class="article-date">2020-01-10</p>
 </section>
 <article class="markdown-body"><h2 id="var">var</h2>
-<p><code>= var 变量名字 类型 = 表达式 =</code> <!-- raw HTML omitted -->
-如果初始化表达式被省略，那么将用零值初始化该变量。 <!-- raw HTML omitted --></p>
+<p><code>var 变量名字 类型 = 表达式</code></p>
+<p>如果初始化表达式被省略，那么将用零值初始化该变量。 <!-- raw HTML omitted --></p>
 <ul>
-<li>数值类型变量对应的零值是0</li>
-<li>布尔类型变量对应的零值是false</li>
-<li>字符串类型对应的零值是空字符串</li>
-<li>接口或引用类型（包括slice、指针、map、chan和函数）变量对应的零值是nil</li>
+<li>数值类型变量对应的零值是 <code>0</code></li>
+<li>布尔类型变量对应的零值是 <code>false</code></li>
+<li>字符串类型对应的零值是 <code>空字符串</code></li>
+<li>接口或引用类型（包括slice、指针、map、chan和函数）变量对应的零值是 <code>nil</code></li>
+<li>数组或结构体等聚合类型对应的零值是 <strong>每个元素或字段都是对应该类型的零值</strong> 。</li>
 </ul>
-<p>数组或结构体等聚合类型对应的零值是每个元素或字段都是对应该类型的零值。</p>
-<p>var t []string 比 t := []string{} 更好</p>
+<p><code>var t []string</code> 比 <code>t := []string{}</code> 更好</p>
 <p>初始化类型,而且对于引用类型的变量，我们不光要声明它，还要为它分配内存空间.new和make都可以用来分配空间,</p>
-<h2 id="make">make</h2>
-<p>make主要用来初始化内置数据结构.包括slice,map和channel,返回该类型已初始化(非零值)的值.</p>
+<h2 id="make--t-length-capacity">make([]T, length, capacity)</h2>
+<p><code>make</code> 主要用来初始化内置数据结构.包括 <code>slice</code>, <code>map</code> 和 <code>channel</code>,返回该类型已初始化(非零值)的值.</p>
 <p>需要注意的是这三种类型本身就是引用类型.</p>
 <ol>
-<li>slice 是一个包含 data(指向数组的指针)、cap 和 len 的结构体；</li>
-<li>map 是一个指向 hmap 结构体的指针；</li>
-<li>channel 是一个指向 hchan 结构体的指针；</li>
+<li><code>slice</code> 是一个包含 <code>data</code> (指向数组的指针)、 <code>cap</code> 和  <code>len</code> 的结构体；</li>
+<li><code>map</code> 是一个指向 <code>hmap</code> 结构体的指针；</li>
+<li><code>channel</code> 是一个指向 <code>hchan</code> 结构体的指针；</li>
 </ol>
-<p>使用make的好处是可以指定len和cap，make(type,len,cap),合适的len和cap可以提升性能。</p>
+<p>使用 <code>make</code> 的好处是可以指定 <code>len</code> 和 <code>cap</code> ， <code>make(type,len,cap)</code>,合适的 <code>len</code> 和 <code>cap</code> 可以提升性能。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">slice</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">int</span>, <span style="color:#ae81ff">100</span>)
 <span style="color:#a6e22e">hash</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#a6e22e">sting</span>]<span style="color:#66d9ef">string</span>, <span style="color:#ae81ff">100</span>)
 <span style="color:#a6e22e">channel</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span>, <span style="color:#ae81ff">100</span>)
-</code></pre></div><p>注意 <!-- raw HTML omitted --></p>
+</code></pre></div><p>注意:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">s1</span> []<span style="color:#66d9ef">int</span>
 <span style="color:#a6e22e">s2</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">int</span>, <span style="color:#ae81ff">3</span>)
 <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">m1</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>
@@ -40,7 +40,7 @@
 </code></pre></div><p>slice s1 的零值是 <code>[]int(nil)</code> 等于 <code>nil</code>, 而通过make初始化之后的s2是 <code>[]int{0, 0, 0}</code>,不要把内部=int=型的零值当成了slice的零值.</p>
 <p>同样的map的零值是 <code>map[string]string(nil)</code> 等于 <code>nil</code>, 通过make初始化之后是 <code>map[string]string{}</code></p>
 <p>chain的零值是 <code>(chain int)(nil)</code> 等于 <code>nil</code>, 通过make初始化之后是 <code>(chan int)(0xc0000a0080)</code></p>
-<h2 id="new">new</h2>
+<h2 id="new--t">new(T)</h2>
 <p>使用new来获取指向某个类型的指针,指针指向新分配的,该类型的零值.<!-- raw HTML omitted --></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> new(<span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>)
 <span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>{}
