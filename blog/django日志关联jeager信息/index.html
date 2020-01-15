@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html><meta charset="utf-8"><meta name="generator" content="Hugo 0.62.0" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light only"><title>Django日志关联Jeager信息&nbsp;&ndash;&nbsp;9r0k Site</title><link rel="stylesheet" href="/css/core.min.51a3025999844727ed93a564c6ad1f52feacd7a37d6e517a9343ae018831afa9bca8d064689d586938cf8ca3a1446d1b.css" integrity="sha384-UaMCWZmERyftk6Vkxq0fUv6s16N9blF6k0OuAYgxr6m8qNBkaJ1YaTjPjKOhRG0b"><body>
+<div class="base-body max-width"><section id="header" class="header max-body-width"><p><a class="home" href="/"><span class="site-name">9r0k Site</span></a></p></section><div id="content" class="flex-body max-body-width"><section class="article-header">
+<h1>Django日志关联Jeager信息</h1>
+<p class="article-date">2020-01-15</p>
+</section>
+<article class="markdown-body"><h2 id="背景">背景</h2>
+<p>近期我们的 <code>Django</code> 项目引入了 <code>Jeager</code> 做调用链监控,希望将调用链的 <code>trace</code> 信息和业务日志进行关联,以便能在出问题的业务尽快查询到对应的业务日志.</p>
+<p>所以将 <code>Jeager</code> 的 <code>trace_id</code> 和 <code>span_id</code> 引入 <code>Django</code> 的日志是目前的改造方向.</p>
+<h2 id="log过滤器">Log过滤器</h2>
+<p>对于在日志输出中增加上下文信息, <code>Python</code> 的 <code>logging</code> 库提供了 <code>Filters</code> 的功能.</p>
+<p><code>Filter</code> 实例可以改变传入的 <code>LogRecords</code> ，比如添加附加属性后使用合适的 <code>Formatter</code> 输出。</p>
+<p>这里我们实现一个 <code>JeagerFilter</code>, 通过 <code>get_current_span()</code> 方法我们拿到当前上下文的 <code>span</code>, 并且将 <code>trace_id</code> 和 <code>span_id</code> 添加到 <code>LogRecords</code> 中.</p>
+<p>最后必须返回 <code>True</code> .逻辑是 <code>Filter.filter</code> 函数返回 <code>True</code> 的时候,这条日志才会被输出.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> opentracing_instrumentation <span style="color:#f92672">import</span> get_current_span
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">JeagerFilter</span>(logging<span style="color:#f92672">.</span>Filter):
+	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">filter</span>(self, record):
+		span <span style="color:#f92672">=</span> get_current_span()
+		record<span style="color:#f92672">.</span>trace_id <span style="color:#f92672">=</span> span<span style="color:#f92672">.</span>trace_id
+		record<span style="color:#f92672">.</span>span_id <span style="color:#f92672">=</span> span<span style="color:#f92672">.</span>span_id
+		<span style="color:#66d9ef">return</span> True
+</code></pre></div><h2 id="django日志配置">Django日志配置</h2>
+<p>接下来我们配置 <code>Django</code> 的 <code>LOGGING</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">LOGGING <span style="color:#f92672">=</span> {
+  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">version</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">1</span>,
+  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">disable_existing_loggers</span><span style="color:#e6db74">&#39;</span>: False,
+  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">filters</span><span style="color:#e6db74">&#39;</span>: {
+	  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">jeager</span><span style="color:#e6db74">&#39;</span>: {
+		  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">()</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">utils.tracing_utils.JeagerFilter</span><span style="color:#e6db74">&#39;</span>
+	  }
+  },
+  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">formatters</span><span style="color:#e6db74">&#39;</span>: {
+	  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">simple</span><span style="color:#e6db74">&#39;</span>: {
+		  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">format</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">[django] trace_id=</span><span style="color:#e6db74">%(trace_id)x</span><span style="color:#e6db74"> span_id=</span><span style="color:#e6db74">%(span_id)x</span><span style="color:#e6db74"> </span><span style="color:#e6db74">%(asctime)s</span><span style="color:#e6db74"> </span><span style="color:#e6db74">%(levelname)s</span><span style="color:#e6db74"> [</span><span style="color:#e6db74">%(process)d</span><span style="color:#e6db74">:</span><span style="color:#e6db74">%(processName)s</span><span style="color:#e6db74">] </span><span style="color:#e6db74">%(pathname)s</span><span style="color:#e6db74"> </span><span style="color:#e6db74">%(module)s</span><span style="color:#e6db74"> </span><span style="color:#e6db74">%(filename)s</span><span style="color:#e6db74"> </span><span style="color:#e6db74">%(funcName)s</span><span style="color:#e6db74"> </span><span style="color:#e6db74">%(lineno)d</span><span style="color:#e6db74"> </span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">%(message)s</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&#39;</span>
+	  },
+  },
+  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">handlers</span><span style="color:#e6db74">&#39;</span>: {
+	  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">null</span><span style="color:#e6db74">&#39;</span>: {
+		  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">class</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">logging.NullHandler</span><span style="color:#e6db74">&#39;</span>,
+		  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">level</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">DEBUG</span><span style="color:#e6db74">&#39;</span>
+	  },
+	  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">console</span><span style="color:#e6db74">&#39;</span>: {
+		  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">class</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">logging.StreamHandler</span><span style="color:#e6db74">&#39;</span>,
+		  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">filters</span><span style="color:#e6db74">&#39;</span>: [<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">jeager</span><span style="color:#e6db74">&#39;</span>],
+		  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">level</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">DEBUG</span><span style="color:#e6db74">&#39;</span>,
+		  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">formatter</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">simple</span><span style="color:#e6db74">&#39;</span>
+	  },
+  },
+  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">loggers</span><span style="color:#e6db74">&#39;</span>: {
+	  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">custom</span><span style="color:#e6db74">&#39;</span>: {
+		  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">handlers</span><span style="color:#e6db74">&#39;</span>: [<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">console</span><span style="color:#e6db74">&#39;</span>],
+		  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">level</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">DEBUG</span><span style="color:#e6db74">&#39;</span>,
+		  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">propagate</span><span style="color:#e6db74">&#39;</span>: False
+	  },
+  },
+  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">root</span><span style="color:#e6db74">&#39;</span>: {
+	  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">handlers</span><span style="color:#e6db74">&#39;</span>: [<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">null</span><span style="color:#e6db74">&#39;</span>],
+	  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">level</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">DEBUG</span><span style="color:#e6db74">&#39;</span>
+  },
+</code></pre></div><p>可以看到在 <code>filters</code> 增加了一个自定义的 <code>utils.tracing_utils.JeagerFilter</code>,别名 <code>jeager</code></p>
+<p>然后在 <code>console</code> 这个 <code>handler</code> 中使用 <code>jeager</code> 这个 <code>Filter</code> 接下来使用 <code>console</code> 这个 <code>handler</code> 的日志中就会增加 <code>trace_id</code> 和 <code>span_id</code> 这两个字段了.</p>
+<p>我们配置一下对应的 <code>formatter</code> 增加: <code>trace_id=%(trace_id)x span_id=%(span_id)x</code></p>
+<p>查看一下对应的输出:</p>
+<p><code>[django] trace_id=2ddd108598ae190a span_id=fd08137be979e9a9 2020-01-15 13:27:19,951 INFO [400:MainProcess] ./custom/views.py views views.py list 83 &quot;custom message&quot;</code></p>
+<p>这里Django日志和Jeager信息的关联就改造完成了.</p>
+</article><section class="article-labels"><a class="article-category li" href=/categories/git/><span class="hashtag">#</span>git</a><a class="article-tag li" href=/tags/git/><span class="hashtag">#</span>git</a></section><section class="article-navigation"><p><a class="link" href="/blog/golang%E5%8F%98%E9%87%8F%E5%88%9D%E5%A7%8B%E5%8C%96/"><span class="li"></span>Golang变量初始化</a class="link"></p></section></div><section id="footer" class="footer max-body-width"><p>9r0k Site</p>
+<p><span>Powered by </span><a href="https://gohugo.io">Hugo</a><span> and the </span><a href="https://themes.gohugo.io/hugo-notepadium/">Notepadium</a></p>
+</section></div>
+</body>
+</html>

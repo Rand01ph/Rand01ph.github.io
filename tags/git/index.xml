@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>git on 9r0k Site</title>
+    <link>http://9r0k.org/tags/git/</link>
+    <description>Recent content in git on 9r0k Site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Wed, 15 Jan 2020 13:33:22 +0800</lastBuildDate>
+    
+	<atom:link href="http://9r0k.org/tags/git/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Django日志关联Jeager信息</title>
+      <link>http://9r0k.org/blog/django%E6%97%A5%E5%BF%97%E5%85%B3%E8%81%94jeager%E4%BF%A1%E6%81%AF/</link>
+      <pubDate>Wed, 15 Jan 2020 13:33:22 +0800</pubDate>
+      
+      <guid>http://9r0k.org/blog/django%E6%97%A5%E5%BF%97%E5%85%B3%E8%81%94jeager%E4%BF%A1%E6%81%AF/</guid>
+      <description>背景 近期我们的 Django 项目引入了 Jeager 做调用链监控,希望将调用链的 trace 信息和业务日志进行关联,以便能在出问题的业务尽快查询到对应的业务日志. 所以将 Jeager 的 trace_id</description>
+    </item>
+    
+  </channel>
+</rss>
