@@ -6,10 +6,19 @@
     <description>Recent content on 9r0k Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 15 Jan 2020 13:33:22 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 20 Jan 2020 13:28:11 +0800</lastBuildDate>
     
 	<atom:link href="http://9r0k.org/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Python装饰器与partial</title>
+      <link>http://9r0k.org/blog/python%E8%A3%85%E9%A5%B0%E5%99%A8%E4%B8%8Epartial/</link>
+      <pubDate>Mon, 20 Jan 2020 13:28:11 +0800</pubDate>
+      
+      <guid>http://9r0k.org/blog/python%E8%A3%85%E9%A5%B0%E5%99%A8%E4%B8%8Epartial/</guid>
+      <description>最近看到一些Python装饰器相关的库都使用到了 functools.partial 函数,不是很清楚使用的原因,探求一二. functools.partial 偏函数,这个好理解,一般用于固定函数的部分参数,返</description>
+    </item>
     
     <item>
       <title>Django日志关联Jeager信息</title>
