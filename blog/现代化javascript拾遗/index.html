@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html><meta charset="utf-8"><meta name="generator" content="Hugo 0.64.1" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light only"><title>现代化javascript拾遗&nbsp;&ndash;&nbsp;9r0k Site</title><link rel="stylesheet" href="/css/core.min.51a3025999844727ed93a564c6ad1f52feacd7a37d6e517a9343ae018831afa9bca8d064689d586938cf8ca3a1446d1b.css" integrity="sha384-UaMCWZmERyftk6Vkxq0fUv6s16N9blF6k0OuAYgxr6m8qNBkaJ1YaTjPjKOhRG0b"><body>
+<div class="base-body max-width"><section id="header" class="header max-body-width"><p><a class="home" href="/"><span class="site-name">9r0k Site</span></a></p></section><div id="content" class="flex-body max-body-width"><section class="article-header">
+<h1>现代化javascript拾遗</h1>
+<p class="article-date">2020-02-11</p>
+</section>
+<article class="markdown-body"><h2 id="现代化javascript拾遗">现代化javascript拾遗</h2>
+<h3 id="变量">变量</h3>
+<p>es6 引入了 const 和 let，由于var的怪异行为，现在不推荐使用var定义变量.
+<a href="https://www.youtube.com/watch?v=sjyjbl5fkp8&amp;feature=youtu.be">https://www.youtube.com/watch?v=sjyjbl5fkp8&amp;feature=youtu.be</a></p>
+<h3 id="条件运算符">条件运算符</h3>
+<p><a href="https://developer.mozilla.org/zh-cn/docs/web/javascript/reference/operators/conditional%5Foperator">https://developer.mozilla.org/zh-cn/docs/web/javascript/reference/operators/conditional%5Foperator</a></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#a6e22e">condition</span> <span style="color:#f92672">?</span> <span style="color:#a6e22e">expriftrue</span> <span style="color:#f92672">:</span> <span style="color:#a6e22e">expriffalse</span>
+</code></pre></div><h3 id="array">array</h3>
+<p>因为数组的长度可随时改变，并且其数据在内存中也可以不连续，所以 javascript 数组不一定是密集型的，这取决于它的使用方式。
+即使使用 const 声明一个数组，数组的内容依然是可以变的</p>
+<h4 id="push">push</h4>
+<p>往数组中插入一个元素</p>
+<h4 id="concat">concat</h4>
+<p>返回一个新的数组，不改变原有数组内容</p>
+<h4 id="map">map()</h4>
+<p><a href="https://developer.mozilla.org/zh-cn/docs/web/javascript/reference/global%5Fobjects/array/map">https://developer.mozilla.org/zh-cn/docs/web/javascript/reference/global%5Fobjects/array/map</a></p>
+<h4 id="reduce">reduce()</h4>
+<p><a href="https://developer.mozilla.org/zh-cn/docs/web/javascript/reference/global%5Fobjects/array/reduce">https://developer.mozilla.org/zh-cn/docs/web/javascript/reference/global%5Fobjects/array/reduce</a>
+数组中所有值的和</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">total</span> <span style="color:#f92672">=</span> [ <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span> ].<span style="color:#a6e22e">reduce</span>(
+  ( <span style="color:#a6e22e">acc</span>, <span style="color:#a6e22e">cur</span> ) =&gt; <span style="color:#a6e22e">acc</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">cur</span>,
+  <span style="color:#ae81ff">0</span>
+);
+</code></pre></div><p>nb 要累加对象数组中包含的值，必须提供初始值，以便各个item正确通过你的函数。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">initialvalue</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">sum</span> <span style="color:#f92672">=</span> [{<span style="color:#a6e22e">x</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>}, {<span style="color:#a6e22e">x</span><span style="color:#f92672">:</span><span style="color:#ae81ff">2</span>}, {<span style="color:#a6e22e">x</span><span style="color:#f92672">:</span><span style="color:#ae81ff">3</span>}].<span style="color:#a6e22e">reduce</span>(
+	(<span style="color:#a6e22e">accumulator</span>, <span style="color:#a6e22e">currentvalue</span>) =&gt; <span style="color:#a6e22e">accumulator</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">currentvalue</span>.<span style="color:#a6e22e">x</span>
+	,<span style="color:#a6e22e">initialvalue</span>
+);
+
+<span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">sum</span>) <span style="color:#75715e">// logs 6
+</span></code></pre></div><h4 id="filter">filter()</h4>
+<p><a href="https://developer.mozilla.org/zh-cn/docs/web/javascript/reference/global%5Fobjects/array/filter">https://developer.mozilla.org/zh-cn/docs/web/javascript/reference/global%5Fobjects/array/filter</a></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">newarray</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">arr</span>.<span style="color:#a6e22e">filter</span>(<span style="color:#a6e22e">callback</span>(<span style="color:#a6e22e">element</span>[, <span style="color:#a6e22e">index</span>[, <span style="color:#a6e22e">array</span>]])[, <span style="color:#a6e22e">thisarg</span>])
+</code></pre></div><h3 id="解构赋值">解构赋值</h3>
+<p><a href="https://developer.mozilla.org/zh-cn/docs/web/javascript/reference/operators/destructuring%5Fassignment">https://developer.mozilla.org/zh-cn/docs/web/javascript/reference/operators/destructuring%5Fassignment</a></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">rest</span>;
+[<span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">b</span>] <span style="color:#f92672">=</span> [<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">20</span>];
+<span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">a</span>); <span style="color:#75715e">// 10
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">b</span>); <span style="color:#75715e">// 20
+</span><span style="color:#75715e"></span>
+[<span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">b</span>, ...<span style="color:#a6e22e">rest</span>] <span style="color:#f92672">=</span> [<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">20</span>, <span style="color:#ae81ff">30</span>, <span style="color:#ae81ff">40</span>, <span style="color:#ae81ff">50</span>];
+<span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">a</span>); <span style="color:#75715e">// 10
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">b</span>); <span style="color:#75715e">// 20
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">rest</span>); <span style="color:#75715e">// [30, 40, 50]
+</span><span style="color:#75715e"></span>
+({ <span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">b</span> } <span style="color:#f92672">=</span> { <span style="color:#a6e22e">a</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">10</span>, <span style="color:#a6e22e">b</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">20</span> });
+<span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">a</span>); <span style="color:#75715e">// 10
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">b</span>); <span style="color:#75715e">// 20
+</span></code></pre></div><h4 id="nb-无声明赋值">nb: 无声明赋值</h4>
+<p>javascript 引擎会将{x}理解成一个代码块，从而发生语法错误。
+只有不将大括号写在行首，避免 javascript 将其解释为代码块，才能解决这个问题。</p>
+<p>赋值语句周围的圆括号 ( &hellip; ) 在使用对象字面量无声明解构赋值时是必须的。
+{a, b} = {a: 1, b: 2} 不是有效的独立语法，因为左边的 {a, b} 被认为是一个块而不是对象字面量。
+然而，({a, b} = {a: 1, b: 2}) 是有效的，正如 var {a, b} = {a: 1, b: 2}
+你的 ( &hellip; ) 表达式之前需要有一个分号，否则它可能会被当成上一行中的函数执行。</p>
+<h4 id="对象的解构赋值">对象的解构赋值</h4>
+<p>对象的解构与数组有一个重要的不同。数组的元素是按次序排列的，变量的取值由它的位置决定；
+而对象的属性没有次序，变量必须与属性同名，才能取到正确的值。</p>
+<h3 id="object">object</h3>
+<h4 id="对象字面量-常见的定义对象的方式">对象字面量-常见的定义对象的方式</h4>
+<p>对象字面值是封闭在花括号对({})中的一个对象的零个或多个&quot;属性名-值&quot;对的（元素）列表。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">car</span> <span style="color:#f92672">=</span> { <span style="color:#a6e22e">mycar</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;saturn&#34;</span>, <span style="color:#a6e22e">getcar</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">cartypes</span>(<span style="color:#e6db74">&#34;honda&#34;</span>), <span style="color:#a6e22e">special</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">sales</span> };
+</code></pre></div><h4 id="对象方法和this">对象方法和this</h4>
+<p>使用 <code>bind</code> 方法可以解决一些场景(<code>settimeout</code>)的 <code>this</code> 指向问题
+<a href="https://developer.mozilla.org/zh-cn/docs/web/javascript/reference/global%5Fobjects/function/bind">https://developer.mozilla.org/zh-cn/docs/web/javascript/reference/global%5Fobjects/function/bind</a></p>
+<p>理解this的视频教程: <a href="https://egghead.io/courses/understand-javascript-s-this-keyword-in-depth">https://egghead.io/courses/understand-javascript-s-this-keyword-in-depth</a></p>
+<h3 id="function">function</h3>
+<p>函数声明: <a href="https://developer.mozilla.org/zh-cn/docs/web/javascript/reference/statements/function">https://developer.mozilla.org/zh-cn/docs/web/javascript/reference/statements/function</a></p>
+<h4 id="箭头函数">箭头函数</h4>
+<p>es6引入
+<a href="https://developer.mozilla.org/zh-cn/docs/web/javascript/reference/functions/arrow%5Ffunctions">https://developer.mozilla.org/zh-cn/docs/web/javascript/reference/functions/arrow%5Ffunctions</a>
+“箭头出现在参数列表后面，然后是函数的主体。 它表达了一些东西，类似“这个输入（参数）产生这个结果（主体）”。”</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#75715e">//加括号的函数体返回对象字面量表达式：
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">params</span> =&gt; ({<span style="color:#a6e22e">foo</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">bar</span>})
+</code></pre></div><h4 id="闭包">闭包</h4>
+<p>考虑这样的程序需要一些实践。 一个好的心智模型是，将函数值看作值，包含他们主体中的代码和它们的创建环境。 被调用时，函数体会看到它的创建环境，而不是它的调用环境。有点像偏函数。</p>
+<h3 id="class">class</h3>
+<p>es6引入
+javascript 类实质上是 javascript 现有的基于原型的继承的语法糖。
+<a href="https://developer.mozilla.org/zh-cn/docs/web/javascript/reference/classes">https://developer.mozilla.org/zh-cn/docs/web/javascript/reference/classes</a></p>
+<h3 id="继承">继承</h3>
+<p>javascript使用原型式继承 —— prototypal inheritance
+<a href="https://developer.mozilla.org/zh-cn/docs/learn/javascript/objects/inheritance">https://developer.mozilla.org/zh-cn/docs/learn/javascript/objects/inheritance</a></p>
+<h3 id="展开语法">展开语法</h3>
+<p>可以在函数调用/数组构造时, 将数组表达式或者string在语法层面展开；还可以在构造字面量对象时, 将对象表达式按key-value的方式展开。有点像python的解包</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">sum</span>(<span style="color:#a6e22e">x</span>, <span style="color:#a6e22e">y</span>, <span style="color:#a6e22e">z</span>) {
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">x</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">y</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">z</span>;
+}
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">numbers</span> <span style="color:#f92672">=</span> [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>];
+
+<span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">sum</span>(...<span style="color:#a6e22e">numbers</span>));
+<span style="color:#75715e">// expected output: 6
+</span><span style="color:#75715e"></span>
+<span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">sum</span>.<span style="color:#a6e22e">apply</span>(<span style="color:#66d9ef">null</span>, <span style="color:#a6e22e">numbers</span>));
+<span style="color:#75715e">// expected output: 6
+</span></code></pre></div><h3 id="函数式编程">函数式编程</h3>
+<p><a href="https://www.youtube.com/playlist?list=pl0zvegevsaeed9hlmcxrk5yuyquag-n84">https://www.youtube.com/playlist?list=pl0zvegevsaeed9hlmcxrk5yuyquag-n84</a>
+高阶函数，map，reduce</p>
+<h3 id="并发模型与事件循环">并发模型与事件循环</h3>
+<p><a href="https://developer.mozilla.org/zh-cn/docs/web/javascript/eventloop">https://developer.mozilla.org/zh-cn/docs/web/javascript/eventloop</a></p>
+<h3 id="promise">promise</h3>
+<p><a href="https://developer.mozilla.org/zh-cn/docs/web/javascript/guide/using%5Fpromises">https://developer.mozilla.org/zh-cn/docs/web/javascript/guide/using%5Fpromises</a></p>
+<p>本质上，promise 是一个被某些函数传出的对象，我们附加回调函数（callback）使用它，而不是将回调函数传入那些函数内部。
+通常，一遇到异常抛出，promise 链就会停下来，直接调用链式中的 catch 处理程序来继续当前执行。
+promise有三种状态:</p>
+<ol>
+<li>pending 结果还不可用</li>
+<li>fulfilled/resolved 操作完成，结果可用</li>
+<li>rejected 错误发生，阻止了结果生成</li>
+</ol>
+<h3 id="truthy-真值">truthy（真值）</h3>
+<h3 id="falsy-值--虚值">falsy 值 (虚值)</h3>
+<p>在 javascript 中只有 7 个 falsy 值。</p>
+<table>
+<thead>
+<tr>
+<th>false</th>
+<th>false 关键字</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>数值 zero</td>
+</tr>
+<tr>
+<td>0n</td>
+<td>当 bigint 作为布尔值使用时, 遵从其作为数值的规则. 0n 是 falsy 值.</td>
+</tr>
+<tr>
+<td>&ldquo;&quot;, &lsquo;', ``</td>
+<td>这是一个空字符串 (字符串的长度为零). javascript 中的字符串可用双引号 &ldquo;&quot;, 单引号 &lsquo;', 或 模板字面量 `` 定义。</td>
+</tr>
+<tr>
+<td>null</td>
+<td>null - 缺少值</td>
+</tr>
+<tr>
+<td>undefined</td>
+<td>undefined - 原始值</td>
+</tr>
+<tr>
+<td>nan</td>
+<td>nan - 非数值</td>
+</tr>
+</tbody>
+</table>
+<h2 id="footnotes">footnotes</h2>
+<h2 id="comment-local-variables">comment local variables</h2>
+</article><section class="article-labels"><a class="article-category li" href=/categories/javascript/><span class="hashtag">#</span>javascript</a><a class="article-tag li" href=/tags/javascript/><span class="hashtag">#</span>javascript</a><a class="article-tag li" href=/tags/languages/><span class="hashtag">#</span>languages</a></section><section class="article-navigation"><p><a class="link" href="/blog/react%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E6%94%BE%E5%BC%83/"><span class="li"></span>React从入门到放弃</a></p><p><a class="link" href="/blog/python%E8%A3%85%E9%A5%B0%E5%99%A8%E4%B8%8Epartial/"><span class="li"></span>Python装饰器与partial</a class="link"></p></section></div><section id="footer" class="footer max-body-width"><p>9r0k Site</p>
+<p><span>Powered by </span><a href="https://gohugo.io">Hugo</a><span> and the </span><a href="https://themes.gohugo.io/hugo-notepadium/">Notepadium</a></p>
+</section></div>
+</body>
+</html>

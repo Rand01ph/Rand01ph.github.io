@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html><meta charset="utf-8"><meta name="generator" content="Hugo 0.64.1" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light only"><title>Python装饰器与partial&nbsp;&ndash;&nbsp;9r0k Site</title><link rel="stylesheet" href="/css/core.min.51a3025999844727ed93a564c6ad1f52feacd7a37d6e517a9343ae018831afa9bca8d064689d586938cf8ca3a1446d1b.css" integrity="sha384-UaMCWZmERyftk6Vkxq0fUv6s16N9blF6k0OuAYgxr6m8qNBkaJ1YaTjPjKOhRG0b"><body>
+<div class="base-body max-width"><section id="header" class="header max-body-width"><p><a class="home" href="/"><span class="site-name">9r0k Site</span></a></p></section><div id="content" class="flex-body max-body-width"><section class="article-header">
+<h1>Python装饰器与partial</h1>
+<p class="article-date">2020-01-20</p>
+</section>
+<article class="markdown-body"><p>最近看到一些Python装饰器相关的库都使用到了 <code>functools.partial</code> 函数,不是很清楚使用的原因,探求一二.</p>
+<h2 id="functools-dot-partial">functools.partial</h2>
+<p>偏函数,这个好理解,一般用于固定函数的部分参数,返回一个 <code>partial</code> 对象.
+不过写出这个定义之后,有点能理解一定的关联性了,都是做函数的再次包装.
+先来看看函数的使用</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">	<span style="color:#f92672">import</span> functools
+	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">mul</span>(a, b):
+		<span style="color:#66d9ef">return</span> a <span style="color:#f92672">*</span> b
+	mul3 <span style="color:#f92672">=</span> functools<span style="color:#f92672">.</span>partial(mul, b<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+mul(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>)
+mul3(<span style="color:#ae81ff">1</span>)
+</code></pre></div><p>我们看一下函数的定义 <code>functools.partial(func, /, *args, **keywords)</code>
+当被调用时,行为类似于 <code>func</code> 附带位置参数 <code>args</code> 和关键字参数 <code>keywords</code> 被调用如果为调用提供了更多的参数，它们会被附加到 <code>args</code> 如果提供了额外的关键字参数，它们会扩展并重载 <code>keywords</code></p>
+<h3 id="偏函数的优势">偏函数的优势</h3>
+<p>空间分离:可以在代码的不同地方指定参数,从结构化的角度或者词法作用域的角度来说可能会很方便.
+时间分离:参数可以在不同阶段被应用,表现上看来就是有些参数是包括在代码里的,另外一些参数是在运行时决定的.</p>
+<h3 id="partial对象">partial对象</h3>
+<p>查看官方文档的解释,非常的详细了</p>
+<p><code>partial</code> 对象是由 <code>partial()</code> 创建的可调用对象。 它们具有三个只读属性：</p>
+<h4 id="partial-dot-func">partial.func</h4>
+<p>一个可调用对象或函数。 对 <code>partial</code> 对象的调用将被转发给 <code>func</code> 并附带新的参数和关键字。</p>
+<h4 id="partial-dot-args">partial.args</h4>
+<p>最左边的位置参数将放置在提供给 <code>partial</code> 对象调用的位置参数之前。</p>
+<h4 id="partial-dot-keywords">partial.keywords</h4>
+<p>当调用 <code>partial</code> 对象时将要提供的关键字参数。</p>
+<h4 id="partial-对比-function">partial 对比 function</h4>
+<p><code>partial</code> 对象与 <code>function</code> 对象的类似之处在于它们都是可调用、可弱引用的对象并可拥有属性。但两者也存在一些重要的区别。例如前者不会自动创建 <code>__name__</code> 和 <code>__doc__</code> 属性。 而且，在类中定义的 <code>partial</code> 对象的行为类似于静态方法，并且不会在实例属性查找期间转换为绑定方法。</p>
+<h2 id="装饰器decorator">装饰器Decorator</h2>
+<p>装饰器其实只是一个语法糖,它本身就是一个函数,然后将函数作为参数传给它,并返回一个新的函数.
+对于装饰器语法,第一个参数会默认传入被包装的函数关于装饰器本身就不多解释,这里主要说一下和 <code>partial</code> 相关的部分.</p>
+<h3 id="带参数的装饰器">带参数的装饰器</h3>
+<p>我们先看下面的例子</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a6e22e">@decorator_with_args</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">a</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test</span>(<span style="color:#f92672">*</span>args, <span style="color:#f92672">*</span><span style="color:#f92672">*</span>kwargs):
+	<span style="color:#66d9ef">pass</span>
+</code></pre></div><p>上述包装过的函数实际上会被翻译成 <code>test = decorator_with_args(arg1, arg2)(test)</code>
+<code>decorator_with_args</code> 是一个接受自定义参数的函数,并且返回实际的装饰器.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> functools <span style="color:#f92672">import</span> wraps
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">decorator_with_args</span>(arg1, arg2):
+	<span style="color:#66d9ef">print</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">arg1 is </span><span style="color:#e6db74">%s</span><span style="color:#e6db74">, arg2 is </span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> (arg1, arg2)
+
+	<span style="color:#a6e22e">@wraps</span>(func)
+	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">real_decorator</span>(func):
+		<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">wrapper</span>(<span style="color:#f92672">*</span>args, <span style="color:#f92672">*</span><span style="color:#f92672">*</span>kwargs):
+			<span style="color:#66d9ef">print</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">call real function</span><span style="color:#e6db74">&#34;</span>
+			<span style="color:#66d9ef">return</span> func(<span style="color:#f92672">*</span>args, <span style="color:#f92672">*</span><span style="color:#f92672">*</span>kwargs)
+		<span style="color:#66d9ef">return</span> wrapper
+	<span style="color:#66d9ef">return</span> real_decorator
+</code></pre></div><p>在实际的执行逻辑上,在装饰器引入的时候,便会先执行最外层的参数函数 <code>decorator_with_args</code> 然后返回装饰器,等待调用执行.</p>
+<h3 id="partial出场">partial出场</h3>
+<p>partial在装饰器场景算是一个小的 <code>trick</code>, 可以实现一个带可选参数的装饰器,并且符合编程习惯,能在不传参数的时候通过 <code>@decorator</code> 也可以传递参数给它,比如 <code>@decorator(a, b)</code></p>
+<p>这里选用 Python Cookbook 里面的一个示例:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> functools <span style="color:#f92672">import</span> wraps, partial
+<span style="color:#f92672">import</span> logging
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">logged</span>(func<span style="color:#f92672">=</span>None, <span style="color:#f92672">*</span>, level<span style="color:#f92672">=</span>logging<span style="color:#f92672">.</span>DEBUG, name<span style="color:#f92672">=</span>None, message<span style="color:#f92672">=</span>None):
+	<span style="color:#66d9ef">if</span> func <span style="color:#f92672">is</span> None:
+		<span style="color:#66d9ef">return</span> partial(logged, level<span style="color:#f92672">=</span>level, name<span style="color:#f92672">=</span>name, message<span style="color:#f92672">=</span>message)
+
+	logname <span style="color:#f92672">=</span> name <span style="color:#66d9ef">if</span> name <span style="color:#66d9ef">else</span> func<span style="color:#f92672">.</span>__module__
+	log <span style="color:#f92672">=</span> logging<span style="color:#f92672">.</span>getLogger(logname)
+	logmsg <span style="color:#f92672">=</span> message <span style="color:#66d9ef">if</span> message <span style="color:#66d9ef">else</span> func<span style="color:#f92672">.</span>__name__
+
+	<span style="color:#a6e22e">@wraps</span>(func)
+	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">wrapper</span>(<span style="color:#f92672">*</span>args, <span style="color:#f92672">*</span><span style="color:#f92672">*</span>kwargs):
+		log<span style="color:#f92672">.</span>log(level, logmsg)
+		<span style="color:#66d9ef">return</span> func(<span style="color:#f92672">*</span>args, <span style="color:#f92672">*</span><span style="color:#f92672">*</span>kwargs)
+
+	<span style="color:#66d9ef">return</span> wrapper
+
+<span style="color:#75715e"># Example use</span>
+<span style="color:#a6e22e">@logged</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">add</span>(x, y):
+	<span style="color:#66d9ef">return</span> x <span style="color:#f92672">+</span> y
+
+<span style="color:#a6e22e">@logged</span>(level<span style="color:#f92672">=</span>logging<span style="color:#f92672">.</span>CRITICAL, name<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">example</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">spam</span>():
+	<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Spam!</span><span style="color:#e6db74">&#39;</span>)
+
+</code></pre></div><p>可以看到， <code>@logged</code> 装饰器可以同时不带参数或带参数。</p>
+<p>展开第一个装饰器得到</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">add <span style="color:#f92672">=</span> logged(add)
+</code></pre></div><p>展开第二个装饰器得到</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">spam <span style="color:#f92672">=</span> logged(level<span style="color:#f92672">=</span>logging<span style="color:#f92672">.</span>CRITICAL, name<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">example</span><span style="color:#e6db74">&#39;</span>)(spam)
+</code></pre></div><p>接着根据 <code>logged</code> 的定义继续展开</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">spam <span style="color:#f92672">=</span> partial(logged, level<span style="color:#f92672">=</span>logging<span style="color:#f92672">.</span>CRITICAL, name<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">example</span><span style="color:#e6db74">&#39;</span>)(spam)
+</code></pre></div><p>这时候 <code>partial(logged, level=logging.CRITICAL, name='example')</code> 会返回一个装饰器, 这个装饰器的作用就是 <code>logged</code> 的真正装饰逻辑</p>
+<p>这里使用 <code>partial</code> 的逻辑是,先将 <code>logged(level=logging.CRITICAL, name='example')</code> 视为一个函数调用,然后返回真实的装饰器,走后面的装饰器流程.</p>
+<p><code>partial</code> 会返回一个未完全初始化的自身，除了被包装函数外其他参数都已经确定下来了。</p>
+<p>我们通过自己实现这个装饰器来对比 <code>partial</code> 的作用</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> functools <span style="color:#f92672">import</span> wraps, partial
+<span style="color:#f92672">import</span> logging
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">my_logged</span>(level<span style="color:#f92672">=</span>logging<span style="color:#f92672">.</span>DEBUG, name<span style="color:#f92672">=</span>None, message<span style="color:#f92672">=</span>None):
+	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">decorator</span>(func):
+		logname <span style="color:#f92672">=</span> name <span style="color:#66d9ef">if</span> name <span style="color:#66d9ef">else</span> func<span style="color:#f92672">.</span>__module__
+		log <span style="color:#f92672">=</span> logging<span style="color:#f92672">.</span>getLogger(logname)
+		logmsg <span style="color:#f92672">=</span> message <span style="color:#66d9ef">if</span> message <span style="color:#66d9ef">else</span> func<span style="color:#f92672">.</span>__name__
+
+		<span style="color:#a6e22e">@wraps</span>(func)
+		<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">wrapper</span>(<span style="color:#f92672">*</span>args, <span style="color:#f92672">*</span><span style="color:#f92672">*</span>kwargs):
+			log<span style="color:#f92672">.</span>log(level, logmsg)
+			<span style="color:#66d9ef">return</span> func(<span style="color:#f92672">*</span>args, <span style="color:#f92672">*</span><span style="color:#f92672">*</span>kwargs)
+		<span style="color:#66d9ef">return</span> wrapper
+	<span style="color:#66d9ef">return</span> decorator
+
+</code></pre></div><p><code>partial</code> 带来的好处是这个装饰器是既可以带参数调用,也可以不带参数调用的,同时也减少了装饰器的包装层级,代码看起来更加清晰.</p>
+<p>这里给出一个 <code>partial</code> 装饰器模板</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> functools
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">decorator_with_args</span>(func<span style="color:#f92672">=</span>None, <span style="color:#f92672">*</span>, arg<span style="color:#f92672">=</span>None):
+
+	<span style="color:#75715e"># 将参数传给自身返回带参数的装饰器</span>
+	<span style="color:#66d9ef">if</span> func <span style="color:#f92672">is</span> None:
+		<span style="color:#66d9ef">return</span> functools<span style="color:#f92672">.</span>partial(decorator_with_args, arg<span style="color:#f92672">=</span>arg)
+
+	<span style="color:#75715e"># 处理参数的逻辑</span>
+
+	<span style="color:#75715e"># 实际的装饰器</span>
+	<span style="color:#a6e22e">@functools.wraps</span>(func)
+	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">wrapper</span>(<span style="color:#f92672">*</span>args, <span style="color:#f92672">*</span><span style="color:#f92672">*</span>kwargs):
+		<span style="color:#75715e"># 编写装饰器的逻辑</span>
+		<span style="color:#75715e"># 处理真实函数调用前的逻辑</span>
+		<span style="color:#75715e"># ...</span>
+		result <span style="color:#f92672">=</span> func(<span style="color:#f92672">*</span>args, <span style="color:#f92672">*</span><span style="color:#f92672">*</span>kwargs)
+		<span style="color:#75715e"># 处理真实函数调用后的逻辑</span>
+		<span style="color:#75715e"># ...</span>
+		<span style="color:#66d9ef">return</span> result
+	<span style="color:#66d9ef">return</span> wrapper
+
+</code></pre></div><h2 id="参考链接">参考链接</h2>
+<p><a href="https://stackoverflow.com/questions/48098569/use-of-functools-partial-in-a-decorator-that-attaches-function-as-attribute-of-o">https://stackoverflow.com/questions/48098569/use-of-functools-partial-in-a-decorator-that-attaches-function-as-attribute-of-o</a>
+<a href="https://python3-cookbook.readthedocs.io/zh%5FCN/latest/c09/p06%5Fdefine%5Fdecorator%5Fthat%5Ftakes%5Foptional%5Fargument.html">https://python3-cookbook.readthedocs.io/zh%5FCN/latest/c09/p06%5Fdefine%5Fdecorator%5Fthat%5Ftakes%5Foptional%5Fargument.html</a></p>
+</article><section class="article-labels"><a class="article-category li" href=/categories/python/><span class="hashtag">#</span>Python</a><a class="article-tag li" href=/tags/python/><span class="hashtag">#</span>Python</a></section><section class="article-navigation"><p><a class="link" href="/blog/%E7%8E%B0%E4%BB%A3%E5%8C%96javascript%E6%8B%BE%E9%81%97/"><span class="li"></span>现代化javascript拾遗</a></p><p><a class="link" href="/blog/django%E6%97%A5%E5%BF%97%E5%85%B3%E8%81%94jeager%E4%BF%A1%E6%81%AF/"><span class="li"></span>Django日志关联Jeager信息</a class="link"></p></section></div><section id="footer" class="footer max-body-width"><p>9r0k Site</p>
+<p><span>Powered by </span><a href="https://gohugo.io">Hugo</a><span> and the </span><a href="https://themes.gohugo.io/hugo-notepadium/">Notepadium</a></p>
+</section></div>
+</body>
+</html>
