@@ -6,10 +6,19 @@
     <description>Recent content in languages on 9r0k Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 28 Dec 2019 16:04:23 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 11 Feb 2020 18:41:45 +0800</lastBuildDate>
     
 	<atom:link href="http://9r0k.org/tags/languages/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>现代化javascript拾遗</title>
+      <link>http://9r0k.org/blog/%E7%8E%B0%E4%BB%A3%E5%8C%96javascript%E6%8B%BE%E9%81%97/</link>
+      <pubDate>Tue, 11 Feb 2020 18:41:45 +0800</pubDate>
+      
+      <guid>http://9r0k.org/blog/%E7%8E%B0%E4%BB%A3%E5%8C%96javascript%E6%8B%BE%E9%81%97/</guid>
+      <description>现代化javascript拾遗 变量 es6 引入了 const 和 let，由于var的怪异行为，现在不推荐使用var定义变量. https://www.youtube.com/watch?v=sjyjbl5fkp8&amp;amp;feature=youtu.be 条件运算符 https://developer.mozilla.org/zh-cn/docs/web/javascript/reference/operators/conditional%5Foperator condition ? expriftrue : expriffalse array 因为数组</description>
+    </item>
     
     <item>
       <title>Git协议介绍</title>
